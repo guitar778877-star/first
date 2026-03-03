@@ -1,3 +1,4 @@
+
 <html>
 <body>
 <form id="projectForm">
@@ -18,3 +19,23 @@
 </form>
 </body>
 </html>
+
+<script>
+  // 실사용 대지면적 자동 계산 함수
+  function calculateArea() {
+    const total = parseFloat(document.getElementById('totalArea').value) || 0;
+    const exclude = parseFloat(document.getElementById('excludeArea').value) || 0;
+    document.getElementById('netArea').value = total - exclude;
+  }
+
+  // DB 저장을 위한 데이터 수집 (예시)
+  function saveData() {
+    const formData = {
+      projectName: document.getElementById('projectName').value,
+      totalArea: document.getElementById('totalArea').value,
+      // ... 나머지 필드
+    };
+    console.log("DB 저장 시도:", formData);
+    // 이후 fetch() 등을 사용하여 백엔드 API로 전송
+  }
+</script>
