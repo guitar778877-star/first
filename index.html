@@ -1,41 +1,44 @@
 
-<html>
-<body>
-<form id="projectForm">
-  <div class="form-group">
-    <label>사업명: <input type="text" id="projectName" name="projectName" required></label>
-  </div>
-  <div class="form-group">
-    <label>구역 총 면적 (㎡): <input type="number" id="totalArea" name="totalArea" step="0.01" oninput="calculateNet()" required></label>
-  </div>
-  <div class="form-group">
-    <label>제외 면적 (㎡): <input type="number" id="excludedArea" name="excludedArea" step="0.01" oninput="calculateNet()" required></label>
-  </div>
-  <div class="form-group" style="background-color: #f0f0f0; padding: 10px;">
-    <strong>실사용 대지면적 (㎡): </strong>
-    <input type="number" id="usableArea" name="usableArea" readonly>
-  </div>
-  <button type="submit">프로젝트 저장</button>
+<form id="rebuildForm">
+  <input type="text" id="projectName" placeholder="사업명" required>
+  <input type="number" id="totalArea" oninput="calculateArea()" placeholder="구역 총 면적">
+  <input type="number" id="excludeArea" oninput="calculateArea()" placeholder="제외 면적">
+  <input type="number" id="netArea" readonly placeholder="실사용 대지면적">
+  <select id="baseYear">
+    <option value="2026">2026</option>
+    </select>
+  <input type="number" id="targetUnits" placeholder="목표 세대수">
+  <input type="number" id="profitRate" placeholder="비례율 기준점 (%)">
+  <button type="submit">데이터 저장</button>
 </form>
-</body>
-</html>
 
 <script>
-  // 실사용 대지면적 자동 계산 함수
+  // 1. 실사용 대지면적 자동 계산
   function calculateArea() {
     const total = parseFloat(document.getElementById('totalArea').value) || 0;
     const exclude = parseFloat(document.getElementById('excludeArea').value) || 0;
     document.getElementById('netArea').value = total - exclude;
   }
 
-  // DB 저장을 위한 데이터 수집 (예시)
-  function saveData() {
-    const formData = {
+  // 2. 데이터 저장 요청
+  document.getElementById('rebuildForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const data = {
       projectName: document.getElementById('projectName').value,
       totalArea: document.getElementById('totalArea').value,
-      // ... 나머지 필드
+      excludeArea: document.getElementById('excludeArea').value,
+      netArea: document.getElementById('netArea').value,
+      baseYear: document.getElementById('baseYear').value,
+      targetUnits: document.getElementById('targetUnits').value,
+      profitRate: document.getElementById('profitRate').value
     };
-    console.log("DB 저장 시도:", formData);
-    // 이후 fetch() 등을 사용하여 백엔드 API로 전송
-  }
+
+    const response = await fetch('/api/save-rebuild-data', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+    
+    if (response.ok) alert('데이터가 저장되었습니다.');
+  });
 </script>
